@@ -1,14 +1,9 @@
 package com.indoorshape.treinoemcasa.model
 
 import com.indoorshape.treinoemcasa.dto.FichaResponseDTO
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Table(name = "ficha")
@@ -26,7 +21,7 @@ data class Ficha (
     @Column(nullable = false)
     val telefone: String,
 
-    @Column (nullable = false)
+    @Column(nullable = false)
     val altura: BigDecimal,
 
     @Column(nullable = false)
@@ -39,12 +34,15 @@ data class Ficha (
     val nivel: String,
 
     @Column(nullable = true)
-    val limitacao: String?
+    val limitacao: String?,
+
+    @Enumerated(EnumType.STRING)
+    var status: StatusFicha = StatusFicha.PENDENTE
 ) {
-    fun toDTO() = FichaResponseDTO (
+    fun toDTO() = FichaResponseDTO(
         id = this.id,
         nome = this.nome,
         email = this.email,
-        telefone = this.telefone
+        telefone = this.telefone,
     )
 }
