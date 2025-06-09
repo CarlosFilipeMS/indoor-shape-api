@@ -32,5 +32,3 @@ build/
 ### VS Code ###
 .vscode/
 
-# Spring Boot - arquivos sensíveis
-src/main/resources/application.properties
