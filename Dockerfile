@@ -1,14 +1,20 @@
-# Usa uma imagem do JDK
-FROM openjdk:17-jdk-slim
+# Etapa 1: build
+FROM maven:3.9.0-eclipse-temurin-17 AS build
 
-# Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
-# Copia o JAR gerado pelo Maven para dentro do contêiner
-COPY target/treinoemcasa-0.0.1-SNAPSHOT.jar app.jar
+COPY pom.xml .
+COPY src ./src
 
-# Expõe a porta padrão do Spring Boot
+RUN mvn clean package -DskipTests
+
+# Etapa 2: runtime
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+COPY --from=build /app/target/treinoemcasa-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
-# Comando de execução
 ENTRYPOINT ["java", "-jar", "app.jar"]
