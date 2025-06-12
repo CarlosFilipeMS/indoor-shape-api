@@ -28,17 +28,21 @@ class PagamentoService(
 
                 val fichaId = payment.externalReference
                 if ((payment.status == "approved" || payment.status == "paid") && fichaId != null) {
-                    fichaService.atualizarStatus(UUID.fromString(fichaId), StatusFicha.valueOf("PAGO"))
+                    fichaService.atualizarStatus(UUID.fromString(fichaId), StatusFicha.PAGO)
                     logger.info("✅ Ficha $fichaId atualizada para PAGO com sucesso.")
+                } else if (fichaId != null) {
+                    logger.info("🟡 Pagamento não aprovado. Status: ${payment.status}. Nenhuma atualização realizada para a ficha $fichaId.")
                 } else {
-                    logger.info("⏳ Pagamento ainda não aprovado ou fichaId nulo: status=${payment.status}, fichaId=$fichaId")
+                    logger.warn("⚠️ Pagamento com status ${payment.status}, mas fichaId nulo.")
                 }
             } catch (ex: Exception) {
                 logger.error("❌ Erro ao processar pagamento no webhook: ${ex.message}", ex)
+                throw ex  // Importante para o Controller saber que falhou
             }
         } else {
             logger.warn("⚠️ Webhook ignorado: action inválida ou paymentId nulo")
         }
     }
+
 
 }

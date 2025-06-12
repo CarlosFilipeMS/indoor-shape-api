@@ -33,7 +33,12 @@ class PagamentoController(
         @RequestBody payload: Map<String, Any>
     ): ResponseEntity<String> {
 
-       if (token != null && token != webhookSecret) {
+        if (token == null) {
+            logger.warn("⚠️ Webhook recebido sem token")
+            return ResponseEntity.status(403).body("Token ausente")
+        }
+
+        if (token != webhookSecret) {
             logger.warn("❌ Tentativa de webhook com token inválido")
             return ResponseEntity.status(403).body("Forbidden")
         }
@@ -45,13 +50,20 @@ class PagamentoController(
         val paymentId = data?.get("id")?.toString()
 
         if (action != null && paymentId != null) {
-            pagamentoService.processarWebhook(action, paymentId)
-            return ResponseEntity.ok("✅ Webhook processado com sucesso.")
+            try {
+                pagamentoService.processarWebhook(action, paymentId)
+                logger.info("✅ Webhook processado com sucesso para paymentId=$paymentId")
+                return ResponseEntity.ok("✅ Webhook processado com sucesso.")
+            } catch (ex: Exception) {
+                logger.error("❌ Erro ao processar webhook: ${ex.message}", ex)
+                return ResponseEntity.internalServerError().body("Erro ao processar webhook")
+            }
         }
 
         logger.warn("⚠️ Webhook recebido com payload inválido: faltando action ou ID de pagamento")
         return ResponseEntity.badRequest().body("Faltando action ou ID de pagamento.")
     }
+
 
     @GetMapping("/retorno")
     fun retornoPagamento(
