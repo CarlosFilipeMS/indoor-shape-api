@@ -29,19 +29,8 @@ class PagamentoController(
 
     @PostMapping("/webhook")
     fun receberWebhook(
-        @RequestParam("token", required = false) token: String?,
         @RequestBody payload: Map<String, Any>
     ): ResponseEntity<String> {
-
-        if (token == null) {
-            logger.warn("⚠️ Webhook recebido sem token")
-            return ResponseEntity.status(403).body("Token ausente")
-        }
-
-        if (token != webhookSecret) {
-            logger.warn("❌ Tentativa de webhook com token inválido")
-            return ResponseEntity.status(403).body("Forbidden")
-        }
 
         logger.info("🔔 Webhook recebido: $payload")
 
@@ -63,6 +52,7 @@ class PagamentoController(
         logger.warn("⚠️ Webhook recebido com payload inválido: faltando action ou ID de pagamento")
         return ResponseEntity.badRequest().body("Faltando action ou ID de pagamento.")
     }
+
 
 
     @GetMapping("/retorno")
