@@ -24,7 +24,7 @@ class PagamentoClient(
             .description("Acesso único a um treino")
             .quantity(1)
             .currencyId("BRL")
-            .unitPrice(BigDecimal("0.50"))
+            .unitPrice(BigDecimal("0.10"))
             .build()
 
         val backUrls = PreferenceBackUrlsRequest.builder()
